@@ -1,50 +1,9 @@
-import { useState } from "react";
-import Button from "../components/Button.jsx";
 import OfficeInfo from "../components/OfficeInfo.jsx";
-
-const initialForm = {
-  name: "",
-  email: "",
-  phone: "",
-  projectType: "",
-  budget: "",
-  timeline: "",
-  message: "",
-};
-
-const projectTypes = ["Residential", "Commercial", "Hospitality", "Retail", "Consultation", "Other"];
+import { officeInfo } from "../data/office.js";
 
 export default function Contact() {
-  const [form, setForm] = useState(initialForm);
-  const [errors, setErrors] = useState({});
-  const [sent, setSent] = useState(false);
-
-  const updateField = (event) => {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: "" }));
-  };
-
-  const validate = () => {
-    const nextErrors = {};
-    if (!form.name.trim()) nextErrors.name = "Name is required.";
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) nextErrors.email = "Enter a valid email address.";
-    if (!form.projectType) nextErrors.projectType = "Choose a project type.";
-    if (!form.message.trim() || form.message.trim().length < 20) {
-      nextErrors.message = "Please share at least 20 characters about your project.";
-    }
-    return nextErrors;
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const nextErrors = validate();
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length === 0) {
-      setSent(true);
-      setForm(initialForm);
-    }
-  };
+  const phoneHref = officeInfo.phone ? `tel:${formatDialValue(officeInfo.phone)}` : "";
+  const whatsappHref = officeInfo.whatsapp ? `https://wa.me/${formatDialValue(officeInfo.whatsapp)}` : "";
 
   return (
     <section className="container-page pb-24 pt-36 sm:pb-32 sm:pt-44" aria-labelledby="contact-page">
@@ -57,98 +16,59 @@ export default function Contact() {
             something meaningful.
           </h1>
           <p className="mt-8 max-w-xl text-lg leading-8 text-muted">
-            Tell us what you are imagining. The form validates on the front end and is ready to connect to your preferred
-            enquiry workflow.
+            Speak with us directly to discuss your space, timeline and design direction.
           </p>
           <div className="mt-14 border-t border-ink/15 pt-8">
             <OfficeInfo />
           </div>
         </div>
 
-        <form className="bg-bone p-6 sm:p-10 lg:p-12" onSubmit={handleSubmit} noValidate>
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Name" name="name" value={form.name} error={errors.name} onChange={updateField} required />
-            <Field
-              label="Email"
-              name="email"
-              type="email"
-              value={form.email}
-              error={errors.email}
-              onChange={updateField}
-              required
-            />
-            <Field label="Phone" name="phone" value={form.phone} onChange={updateField} />
-            <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-widecaps text-muted">Project Type</span>
-              <select
-                name="projectType"
-                value={form.projectType}
-                onChange={updateField}
-                aria-invalid={Boolean(errors.projectType)}
-                className="mt-3 w-full border-0 border-b border-ink/25 bg-transparent px-0 py-3 text-base focus:border-clay focus:ring-0"
-                required
-              >
-                <option value="">Select type</option>
-                {projectTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-              {errors.projectType ? <ErrorText>{errors.projectType}</ErrorText> : null}
-            </label>
-            <Field label="Estimated Budget" name="budget" value={form.budget} onChange={updateField} />
-            <Field label="Project Timeline" name="timeline" value={form.timeline} onChange={updateField} />
+        <aside className="flex min-h-[28rem] flex-col justify-between bg-bone p-6 sm:p-10 lg:p-12">
+          <div>
+            <p className="eyebrow">Start a Conversation</p>
+            <h2 className="mt-8 font-serif text-[clamp(3rem,6vw,6.5rem)] leading-[0.9]">
+              Call or chat
+              <br />
+              with us.
+            </h2>
+            <p className="mt-8 max-w-xl text-lg leading-8 text-muted">
+              Use WhatsApp for quick project questions, or call us directly when you are ready to begin.
+            </p>
           </div>
 
-          <label className="mt-8 block">
-            <span className="text-xs font-semibold uppercase tracking-widecaps text-muted">
-              Tell us about your project
-            </span>
-            <textarea
-              name="message"
-              value={form.message}
-              onChange={updateField}
-              rows="7"
-              aria-invalid={Boolean(errors.message)}
-              className="mt-3 w-full resize-y border-0 border-b border-ink/25 bg-transparent px-0 py-3 text-base focus:border-clay focus:ring-0"
-              required
-            />
-            {errors.message ? <ErrorText>{errors.message}</ErrorText> : null}
-          </label>
-
-          <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center">
-            <Button type="submit">Send Enquiry</Button>
-            {sent ? (
-              <p className="text-sm font-semibold text-muted" role="status">
-                Thank you. Your enquiry has been validated.
-              </p>
-            ) : null}
+          <div className="mt-12 grid gap-4 sm:grid-cols-2">
+            <ContactAction href={whatsappHref} external>
+              Chat on WhatsApp
+            </ContactAction>
+            <ContactAction href={phoneHref}>Call Us</ContactAction>
           </div>
-        </form>
+        </aside>
       </div>
     </section>
   );
 }
 
-function Field({ label, name, value, onChange, error, type = "text", required = false }) {
+function ContactAction({ href, children, external = false }) {
+  const active = Boolean(href);
+  const className = `inline-flex min-h-16 items-center justify-center border border-ink px-6 py-4 text-center text-sm font-semibold uppercase tracking-widecaps transition duration-500 ease-premium focus-visible:outline focus-visible:outline-2 ${
+    active ? "text-ink hover:bg-ink hover:text-paper" : "cursor-not-allowed text-muted/55"
+  }`;
+
+  if (!active) {
+    return (
+      <span className={className} aria-disabled="true">
+        {children}
+      </span>
+    );
+  }
+
   return (
-    <label className="block">
-      <span className="text-xs font-semibold uppercase tracking-widecaps text-muted">{label}</span>
-      <input
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        aria-invalid={Boolean(error)}
-        className="mt-3 w-full border-0 border-b border-ink/25 bg-transparent px-0 py-3 text-base focus:border-clay focus:ring-0"
-        required={required}
-      />
-      {error ? <ErrorText>{error}</ErrorText> : null}
-    </label>
+    <a href={href} className={className} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined}>
+      {children}
+    </a>
   );
 }
 
-function ErrorText({ children }) {
-  return <span className="mt-2 block text-sm font-semibold text-clay">{children}</span>;
+function formatDialValue(value) {
+  return value.replace(/[^\d+]/g, "");
 }

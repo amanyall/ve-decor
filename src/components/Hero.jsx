@@ -3,11 +3,11 @@ import Button from "./Button.jsx";
 export default function Hero() {
   return (
     <section className="relative flex min-h-screen overflow-hidden bg-charcoal text-paper" aria-labelledby="home-hero">
-      <img
+      {/* <img
         className="absolute inset-0 h-full w-full object-cover opacity-72 animate-slowZoom"
         src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=Ve-decort&fit=crop&w=2200&q=90"
         alt="Elegant neutral living space with stone fireplace, timber details and soft seating"
-      />
+      /> */}
       <div className="absolute inset-0 bg-gradient-to-b from-charcoal/35 via-charcoal/25 to-charcoal/80" />
       <div className="container-page relative z-10 flex min-h-screen flex-col justify-end pb-14 pt-32 sm:pb-20">
         <p className="reveal mb-8 text-xs font-semibold uppercase tracking-widecaps text-paper/80">
