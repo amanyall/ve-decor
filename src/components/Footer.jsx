@@ -39,7 +39,7 @@ export default function Footer() {
                 href="#top"
                 className="block text-sm font-semibold uppercase tracking-widecaps text-paper/72 transition hover:text-paper"
               >
-                {item}
+                {/* {item} */}
               </a>
             ))}
           </div>
